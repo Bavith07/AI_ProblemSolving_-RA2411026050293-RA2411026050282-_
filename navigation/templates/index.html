@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Navigation — BFS vs DFS Pathfinding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <h1>Smart <span class="accent">Navigation</span></h1>
+                <p class="subtitle">BFS vs DFS Pathfinding Comparison</p>
+            </div>
+            <div class="header-badge">
+                <span class="dot green"></span> Interactive Graph Builder
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- Left: Graph Canvas & Controls -->
+            <section class="graph-section">
+                <div class="toolbar">
+                    <div class="tool-group">
+                        <button class="tool-btn active" id="btn-add-node" onclick="setMode('node')" title="Add Node">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M9 6.5v5M6.5 9h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            Add Node
+                        </button>
+                        <button class="tool-btn" id="btn-add-edge" onclick="setMode('edge')" title="Add Edge">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="4" cy="14" r="2.5" stroke="currentColor" stroke-width="1.3"/><circle cx="14" cy="4" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M6 12L12 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                            Add Edge
+                        </button>
+                        <button class="tool-btn" id="btn-set-start" onclick="setMode('start')" title="Set Start">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polygon points="7,4 14,9 7,14" fill="currentColor"/></svg>
+                            Start
+                        </button>
+                        <button class="tool-btn" id="btn-set-goal" onclick="setMode('goal')" title="Set Goal">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="3" fill="currentColor"/><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.3"/></svg>
+                            Goal
+                        </button>
+                    </div>
+                    <div class="tool-group">
+                        <button class="tool-btn danger" onclick="clearGraph()">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="graph-canvas" width="700" height="460"></canvas>
+                    <div class="canvas-hint" id="canvas-hint">Click on the canvas to add nodes</div>
+                </div>
+
+                <div class="start-goal-display">
+                    <div class="sg-chip start-chip">
+                        <span class="sg-label">Start:</span>
+                        <span class="sg-value" id="start-display">Not set</span>
+                    </div>
+                    <div class="sg-arrow">&#10132;</div>
+                    <div class="sg-chip goal-chip">
+                        <span class="sg-label">Goal:</span>
+                        <span class="sg-value" id="goal-display">Not set</span>
+                    </div>
+                    <button class="btn btn-primary btn-run" id="btn-run" onclick="runPathfinding()" disabled>
+                        &#9654; Find Path
+                    </button>
+                </div>
+
+                <!-- Preset Graphs -->
+                <div class="presets">
+                    <span class="preset-label">Quick Start:</span>
+                    <button class="preset-btn" onclick="loadPreset('simple')">Simple Graph</button>
+                    <button class="preset-btn" onclick="loadPreset('complex')">Complex Graph</button>
+                    <button class="preset-btn" onclick="loadPreset('grid')">Grid Graph</button>
+                </div>
+            </section>
+
+            <!-- Right: Results -->
+            <section class="results-section">
+                <h2 class="section-title">&#9889; Pathfinding Results</h2>
+
+                <!-- BFS Card -->
+                <div class="result-card bfs-card" id="bfs-card">
+                    <div class="card-header">
+                        <span class="badge bfs-badge">BFS</span>
+                        <span class="badge type-badge">Breadth-First</span>
+                    </div>
+                    <div class="result-row"><span>Path Found</span><span class="rval" id="bfs-path">—</span></div>
+                    <div class="result-row"><span>Path Length</span><span class="rval" id="bfs-len">—</span></div>
+                    <div class="result-row"><span>Nodes Explored</span><span class="rval bfs-color" id="bfs-nodes">—</span></div>
+                    <div class="result-row"><span>Time</span><span class="rval" id="bfs-time">—</span></div>
+                    <div class="result-row"><span>Optimal?</span><span class="rval" id="bfs-optimal">—</span></div>
+                    <div class="exploration-order">
+                        <span class="eo-label">Exploration Order:</span>
+                        <div class="eo-list" id="bfs-order"></div>
+                    </div>
+                </div>
+
+                <!-- DFS Card -->
+                <div class="result-card dfs-card" id="dfs-card">
+                    <div class="card-header">
+                        <span class="badge dfs-badge">DFS</span>
+                        <span class="badge type-badge">Depth-First</span>
+                    </div>
+                    <div class="result-row"><span>Path Found</span><span class="rval" id="dfs-path">—</span></div>
+                    <div class="result-row"><span>Path Length</span><span class="rval" id="dfs-len">—</span></div>
+                    <div class="result-row"><span>Nodes Explored</span><span class="rval dfs-color" id="dfs-nodes">—</span></div>
+                    <div class="result-row"><span>Time</span><span class="rval" id="dfs-time">—</span></div>
+                    <div class="result-row"><span>Optimal?</span><span class="rval" id="dfs-optimal">—</span></div>
+                    <div class="exploration-order">
+                        <span class="eo-label">Exploration Order:</span>
+                        <div class="eo-list" id="dfs-order"></div>
+                    </div>
+                </div>
+
+                <!-- Comparison -->
+                <div class="compare-panel" id="compare-panel" style="display:none;">
+                    <h3>Comparison</h3>
+                    <div class="cmp-row"><span>Shorter Path</span><span class="cmp-val" id="cmp-shorter">—</span></div>
+                    <div class="cmp-row"><span>Fewer Nodes Explored</span><span class="cmp-val" id="cmp-fewer">—</span></div>
+                    <div class="cmp-row"><span>Path Difference</span><span class="cmp-val" id="cmp-diff">—</span></div>
+                    <div class="bar-section">
+                        <p class="bar-title">Nodes Explored</p>
+                        <div class="bar-row"><span>BFS</span><div class="bar-track"><div class="bar-fill bfs-fill" id="bar-bfs"></div></div><span id="bar-bfs-val">0</span></div>
+                        <div class="bar-row"><span>DFS</span><div class="bar-track"><div class="bar-fill dfs-fill" id="bar-dfs"></div></div><span id="bar-dfs-val">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="info-panel">
+                    <h3>&#8505; How It Works</h3>
+                    <div class="info-block">
+                        <h4>BFS (Breadth-First Search)</h4>
+                        <p>Explores all neighbors at the current depth before moving deeper. Uses a <strong>queue (FIFO)</strong>. Always finds the <strong>shortest path</strong> in unweighted graphs.</p>
+                    </div>
+                    <div class="info-block">
+                        <h4>DFS (Depth-First Search)</h4>
+                        <p>Explores as deep as possible along each branch before backtracking. Uses a <strong>stack (LIFO)</strong>. May find a <strong>longer path</strong> than optimal.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>AI Problem Solving Assignment — BFS &amp; DFS Navigation Comparison</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+</body>
+</html>
