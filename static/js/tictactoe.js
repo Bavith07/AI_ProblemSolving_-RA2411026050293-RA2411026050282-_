@@ -49,7 +49,7 @@ function makeMove(index, player) {
 }
 
 function fetchAIMove() {
-    fetch('/api/move', {
+    fetch('/api/ttt/move', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ board: board })

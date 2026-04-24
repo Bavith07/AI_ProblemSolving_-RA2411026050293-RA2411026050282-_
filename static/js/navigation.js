@@ -384,7 +384,7 @@ async function runPathfinding() {
     });
 
     try {
-        const res = await fetch("/api/find-path", {
+        const res = await fetch("/api/nav/find-path", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

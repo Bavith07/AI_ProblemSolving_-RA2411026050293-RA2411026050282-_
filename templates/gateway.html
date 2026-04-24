@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hub — Assignments Gateway</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent-1: #6366f1; /* Indigo */
+            --accent-2: #ec4899; /* Pink */
+            --accent-3: #10b981; /* Emerald */
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.15), transparent 40%);
+            filter: blur(80px);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 90%;
+            text-align: center;
+            z-index: 1;
+        }
+
+        header {
+            margin-bottom: 4rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.2s; }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-ttt .icon { color: var(--accent-1); box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
+        .card-nav .icon { color: var(--accent-2); box-shadow: 0 0 20px rgba(236, 72, 153, 0.2); }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-desc {
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-launch {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #fff;
+            transition: gap 0.3s ease;
+        }
+
+        .card:hover .btn-launch {
+            gap: 1rem;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 2rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 2.5rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <header>
+            <h1>AI Problem Solving</h1>
+            <p class="subtitle">Unified Workspace & Comparison Tools</p>
+        </header>
+
+        <div class="grid">
+            <a href="/tictactoe" class="card card-ttt">
+                <div class="icon">✕</div>
+                <h2>Tic-Tac-Toe AI</h2>
+                <p class="card-desc">Experience an unbeatable AI opponent. Compare Minimax performance with Alpha-Beta pruning in real-time.</p>
+                <div class="badge-list">
+                    <span class="badge">Minimax</span>
+                    <span class="badge">Alpha-Beta</span>
+                    <span class="badge">Optimal</span>
+                </div>
+                <div class="btn-launch">
+                    Launch Application <span>&rarr;</span>
+                </div>
+            </a>
+
+            <a href="/navigation" class="card card-nav">
+                <div class="icon">🧭</div>
+                <h2>Smart Navigation</h2>
+                <p class="card-desc">Interactive pathfinding visualizer. Analyze the differences between Breadth-First and Depth-First search strategies.</p>
+                <div class="badge-list">
+                    <span class="badge">BFS</span>
+                    <span class="badge">DFS</span>
+                    <span class="badge">Graph Theory</span>
+                </div>
+                <div class="btn-launch">
+                    Launch Application <span>&rarr;</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Problem Solving Assignment
+    </footer>
+</body>
+</html>
